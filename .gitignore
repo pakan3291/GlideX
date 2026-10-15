@@ -1,34 +1,29 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-build/
-dist/
-portable/
-installer/
-*.egg-info/
-*.spec
-*.exe
-
 # Virtual Environments
 venv/
 .venv/
 env/
-ENV/
 
-# IDE & Editor files
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local Configs & Logs
+config.json
+settings.json
+config/
+*.log
+
+# Build, Portable & Installer Outputs
+build/
+dist/
+*.spec
+*.exe
+portable/
+installer/
+
+# IDE & OS
 .vscode/
 .idea/
-.cursor/
-*.swp
-*.swo
-
-# Local runtime data & config
-config.json
-*.log
-scratch/
+.DS_Store
+Thumbs.db
