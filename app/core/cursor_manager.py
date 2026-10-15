@@ -37,6 +37,7 @@ from app.core.win32_api import (
     LR_SHARED,
     SYSTEM_CURSOR_DEFINITIONS
 )
+from app.config import get_cursors_dir, get_app_root
 
 
 def measure_image_geometry(qimg: QImage) -> Tuple[int, int, int, int, bool]:
@@ -433,10 +434,9 @@ class WindowsCursorExtractor:
     def reload_all(self):
         self.assets.clear()
         self.known_hashes.clear()
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         local_cursors_dirs = [
-            os.path.join(project_root, "assets", "cursors"),
-            os.path.join(project_root, "cursors")
+            get_cursors_dir(),
+            os.path.join(get_app_root(), "cursors")
         ]
 
         # Try to read active scheme name from registry

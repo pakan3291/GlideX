@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
     QButtonGroup
 )
 
-from app.config import AppConfig, set_start_with_windows, is_start_with_windows
+from app.config import AppConfig, set_start_with_windows, is_start_with_windows, get_cursors_dir
 from app.core.win32_api import SystemCursorManager, SYSTEM_CURSOR_DEFINITIONS
 from app.core.cursor_manager import WindowsCursorExtractor
 from app.core.input_hook import SoundSynthesizer
@@ -1062,10 +1062,7 @@ class ModernDashboardWindow(QMainWindow):
         self._refresh_gallery()
 
     def _open_cursors_folder(self):
-        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        cursors_dir = os.path.join(project_root, "assets", "cursors")
-        if not os.path.exists(cursors_dir):
-            cursors_dir = os.path.join(project_root, "cursors")
+        cursors_dir = get_cursors_dir()
         os.makedirs(cursors_dir, exist_ok=True)
         try:
             os.startfile(cursors_dir)

@@ -2,6 +2,7 @@
 Configuration Manager & Persistence
 ==================================
 Handles settings schema, local JSON persistence, Windows startup registry, and presets.
+Supports portable mode resolution (portable/GlideX/config/settings.json) and dev mode.
 """
 
 import os
@@ -10,6 +11,42 @@ import json
 import winreg
 from dataclasses import dataclass, field, asdict
 from typing import Dict, Optional
+
+
+def get_app_root() -> str:
+    """Returns the application root directory (source root or portable root)."""
+    if getattr(sys, 'frozen', False):
+        exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+        # If running from inside bin/, the portable root is one level up
+        if os.path.basename(exe_dir).lower() == "bin":
+            return os.path.dirname(exe_dir)
+        return exe_dir
+    # Running from Python source: project root is two levels up from app/config.py
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def get_default_config_path() -> str:
+    """Returns the appropriate settings file path (config/settings.json for portable, config.json for dev)."""
+    root = get_app_root()
+    if getattr(sys, 'frozen', False):
+        cfg_dir = os.path.join(root, "config")
+        os.makedirs(cfg_dir, exist_ok=True)
+        return os.path.join(cfg_dir, "settings.json")
+
+    # In source mode: if config/settings.json exists use it, else default to config.json
+    cfg_dir = os.path.join(root, "config")
+    settings_json = os.path.join(cfg_dir, "settings.json")
+    if os.path.exists(settings_json):
+        return settings_json
+    return os.path.join(root, "config.json")
+
+
+def get_cursors_dir() -> str:
+    """Returns the assets/cursors directory path."""
+    root = get_app_root()
+    cursors_dir = os.path.join(root, "assets", "cursors")
+    os.makedirs(cursors_dir, exist_ok=True)
+    return cursors_dir
 
 
 @dataclass
@@ -71,8 +108,11 @@ class AppConfig:
     def save_to_file(self, filepath: Optional[str] = None):
         """Save configuration to JSON file."""
         if not filepath:
-            filepath = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config.json")
+            filepath = get_default_config_path()
         try:
+            parent_dir = os.path.dirname(filepath)
+            if parent_dir:
+                os.makedirs(parent_dir, exist_ok=True)
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(asdict(self), f, indent=2)
         except Exception as e:
@@ -82,7 +122,7 @@ class AppConfig:
     def load_from_file(cls, filepath: Optional[str] = None) -> 'AppConfig':
         """Load configuration from JSON file or return default."""
         if not filepath:
-            filepath = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config.json")
+            filepath = get_default_config_path()
         if os.path.exists(filepath):
             try:
                 with open(filepath, 'r', encoding='utf-8') as f:
@@ -97,12 +137,16 @@ def set_start_with_windows(enable: bool):
     """Manages Windows startup registry entry under HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run."""
     run_key = r"Software\Microsoft\Windows\CurrentVersion\Run"
     app_name = "GlideX"
-    exe_path = sys.executable
-    if not exe_path.lower().endswith(".exe"):
-        main_py = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "main.py")
-        cmd = f'"{sys.executable}" "{main_py}"'
+    if getattr(sys, 'frozen', False):
+        root = get_app_root()
+        root_exe = os.path.join(root, "GlideX.exe")
+        if os.path.exists(root_exe):
+            cmd = f'"{root_exe}"'
+        else:
+            cmd = f'"{sys.executable}"'
     else:
-        cmd = f'"{exe_path}"'
+        main_py = os.path.join(get_app_root(), "main.py")
+        cmd = f'"{sys.executable}" "{main_py}"'
 
     try:
         key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, run_key, 0, winreg.KEY_ALL_ACCESS)
