@@ -9,6 +9,7 @@ __pycache__/
 # Distribution / packaging
 build/
 dist/
+portable/
 *.egg-info/
 *.spec
 *.exe
