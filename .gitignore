@@ -21,6 +21,8 @@ dist/
 *.exe
 portable/
 installer/
+portable-maker/
+installer-maker/
 
 # IDE & OS
 .vscode/
