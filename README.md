@@ -51,6 +51,49 @@ GlideX/
 │       ├── styles.py         # Custom QSS styling & reusable UI components
 │       └── tray_icon.py      # System Tray integration & quick toggles
 ├── assets/
-│   └── cursors/              # Optional directory for custom .cur / .png overrides
-├── main.py                   # Application entry point
-└── requirements.txt          # Python dependencies
+│   └── cursors/              # Directory for custom .cur / .ani / .png overrides
+├── main.py                   # Clean application entry point
+├── requirements.txt          # Python dependencies
+├── .gitignore                # Git ignore rules
+└── README.md                 # Project documentation
+```
+
+---
+
+## ⚡ Quick Start & Installation
+
+### 1. Prerequisites
+- **OS:** Windows 10 or Windows 11 (64-bit recommended)
+- **Python:** 3.10 or newer
+
+### 2. Clone Repository
+```bash
+git clone https://github.com/pakan3291/GlideX.git
+cd GlideX
+```
+
+### 3. Install Requirements
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run GlideX
+```bash
+python main.py
+```
+
+---
+
+## ⌨️ Global Shortcuts
+
+| Shortcut | Action | Description |
+| :--- | :--- | :--- |
+| **`Ctrl + Shift + Q`** | **Emergency Failsafe** | Instantly restores all native Windows cursors and pauses overlay. |
+| **`Ctrl + Shift + S`** | **Toggle Overlay** | Toggles custom animated cursor overlay On / Off. |
+| **`Ctrl + Shift + F`** | **Toggle Spotlight** | Toggles screen spotlight presentation focus mode. |
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
