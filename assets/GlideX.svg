@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B"/>
+      <stop offset="50%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#09090B"/>
+    </linearGradient>
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="50%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="trailGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#6366F1"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#000000" flood-opacity="0.75"/>
+    </filter>
+  </defs>
+
+  <!-- Full-bleed rounded squircle so it fills 100% of the icon slot -->
+  <rect x="8" y="8" width="496" height="496" rx="116" fill="url(#bgGrad)" stroke="url(#borderGrad)" stroke-width="14"/>
+
+  <!-- Subtle Glow & Click Ripple at Pointer Tip -->
+  <circle cx="145" cy="125" r="58" fill="none" stroke="#38BDF8" stroke-width="12" opacity="0.55"/>
+
+  <!-- Bold Motion Glide Trail (Visible even at 16x16 in System Tray) -->
+  <path d="M195 170 L425 275 L312 316 L272 428 Z" fill="url(#trailGrad)" opacity="0.35"/>
+  <path d="M170 148 L400 253 L287 294 L247 406 Z" fill="url(#trailGrad)" opacity="0.65"/>
+
+  <!-- Main High-Contrast Cursor Pointer -->
+  <g filter="url(#shadow)">
+    <path d="M145 125 L385 235 L268 278 L225 395 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="24" stroke-linejoin="round" stroke-linecap="round"/>
+    <path d="M162 142 L360 232 L262 268 L226 366 Z" fill="#09090B" stroke="#09090B" stroke-width="10" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Bright Cyan Hotspot Accent -->
+  <circle cx="145" cy="125" r="16" fill="#38BDF8"/>
+</svg>

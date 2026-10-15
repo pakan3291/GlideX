@@ -8,7 +8,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import QSystemTrayIcon, QMenu, QApplication
 
-from app.config import AppConfig
+from typing import Optional
+from app.config import AppConfig, get_app_icon
 from app.core.cursor_manager import WindowsCursorExtractor
 from app.ui.styles import TRAY_MENU_QSS
 
@@ -16,23 +17,17 @@ from app.ui.styles import TRAY_MENU_QSS
 class TrayIconManager:
     """Manages QSystemTrayIcon and its context menu."""
 
-    def __init__(self, app_instance, config: AppConfig, extractor: WindowsCursorExtractor, dashboard):
+    def __init__(self, app_instance, config: AppConfig, extractor: WindowsCursorExtractor, dashboard, icon: Optional[QIcon] = None):
         self.app = app_instance
         self.config = config
         self.extractor = extractor
         self.dashboard = dashboard
+        self.icon = icon if (icon is not None and not icon.isNull()) else get_app_icon()
         self._init_tray()
 
-    def _create_tray_icon(self) -> QIcon:
-        asset = self.extractor.get_asset("ARROW")
-        if asset and asset.pixmap and not asset.pixmap.isNull():
-            return QIcon(asset.pixmap)
-        pixmap = QPixmap(32, 32)
-        pixmap.fill(Qt.GlobalColor.transparent)
-        return QIcon(pixmap)
-
     def _init_tray(self):
-        self.tray = QSystemTrayIcon(self._create_tray_icon(), self.app)
+        self.tray = QSystemTrayIcon(self.app)
+        self.tray.setIcon(self.icon)
         self.tray.setToolTip(f"GlideX ({self.extractor.scheme_name})")
 
         menu = QMenu()
@@ -63,7 +58,7 @@ class TrayIconManager:
 
         self.tray.setContextMenu(menu)
         self.tray.activated.connect(self._on_tray_activated)
-        self.tray.show()
+        self.tray.setVisible(True)
 
     def _on_tray_activated(self, reason):
         if reason in (QSystemTrayIcon.ActivationReason.Trigger, QSystemTrayIcon.ActivationReason.DoubleClick):

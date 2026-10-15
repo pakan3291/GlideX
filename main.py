@@ -6,10 +6,11 @@ hooks, fullscreen overlay rendering, settings dashboard, and system tray icon.
 """
 
 import sys
+import ctypes
 from PySide6.QtWidgets import QApplication
 from pynput import keyboard
 
-from app.config import AppConfig
+from app.config import AppConfig, get_app_icon
 from app.core.win32_api import SystemCursorManager
 from app.core.cursor_manager import WindowsCursorExtractor
 from app.core.input_hook import SoundSynthesizer, MouseBridge
@@ -22,8 +23,18 @@ class GlideXApp:
     """Master application controller coordinating overlay, tray, hooks, and GUI."""
 
     def __init__(self):
+        # Explicitly set AppUserModelID before QApplication initialization
+        try:
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("GlideX.CursorPhysics.App.v1")
+        except Exception:
+            pass
+
         self.app = QApplication.instance() or QApplication(sys.argv)
         self.app.setQuitOnLastWindowClosed(False)
+
+        # Load multi-resolution QIcon and bind to application
+        self.app_icon = get_app_icon()
+        self.app.setWindowIcon(self.app_icon)
 
         # 1. Load Persistent Config
         self.config = AppConfig.load_from_file()
@@ -41,9 +52,10 @@ class GlideXApp:
         # 4. Windows & GUI
         self.overlay = CursorOverlayWindow(self.config, self.bridge, self.sound, self.extractor)
         self.dashboard = ModernDashboardWindow(self.config, self.cursor_mgr, self.sound, self.extractor)
+        self.dashboard.setWindowIcon(self.app_icon)
 
         # 5. System Tray & Hotkeys
-        self.tray_manager = TrayIconManager(self.app, self.config, self.extractor, self.dashboard)
+        self.tray_manager = TrayIconManager(self.app, self.config, self.extractor, self.dashboard, icon=self.app_icon)
         self._init_global_hotkeys()
 
         self.app.aboutToQuit.connect(self._cleanup)

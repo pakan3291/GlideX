@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
     QButtonGroup
 )
 
-from app.config import AppConfig, set_start_with_windows, is_start_with_windows, get_cursors_dir
+from app.config import AppConfig, set_start_with_windows, is_start_with_windows, get_cursors_dir, get_app_icon
 from app.core.win32_api import SystemCursorManager, SYSTEM_CURSOR_DEFINITIONS
 from app.core.cursor_manager import WindowsCursorExtractor
 from app.core.input_hook import SoundSynthesizer
@@ -48,6 +48,7 @@ class ModernDashboardWindow(QMainWindow):
         self.extractor = extractor
 
         self.setWindowTitle("GlideX - Real-Time Cursor Physics & Studio")
+        self.setWindowIcon(get_app_icon())
         self.resize(1020, 720)
         self.setMinimumSize(920, 640)
 

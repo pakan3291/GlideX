@@ -49,6 +49,62 @@ def get_cursors_dir() -> str:
     return cursors_dir
 
 
+def get_asset_path(filename: str) -> str:
+    """
+    Returns the absolute path to an asset file (e.g. GlideX.ico, GlideX.png, GlideX.svg).
+    Checks PyInstaller _MEIPASS, portable root assets/, and project root assets/.
+    """
+    if hasattr(sys, '_MEIPASS'):
+        mei_path = os.path.join(sys._MEIPASS, "assets", filename)
+        if os.path.exists(mei_path):
+            return mei_path
+        mei_root = os.path.join(sys._MEIPASS, filename)
+        if os.path.exists(mei_root):
+            return mei_root
+
+    root = get_app_root()
+    asset_path = os.path.join(root, "assets", filename)
+    if os.path.exists(asset_path):
+        return asset_path
+
+    if getattr(sys, 'frozen', False):
+        exe_dir = os.path.dirname(os.path.abspath(sys.executable))
+        exe_asset = os.path.join(exe_dir, "assets", filename)
+        if os.path.exists(exe_asset):
+            return exe_asset
+
+    return asset_path
+
+
+def get_app_icon():
+    """
+    Builds a multi-size QIcon containing high-res ICO and pre-rendered pixmaps
+    (16, 20, 24, 32, 40, 48, 64, 128, 256) for razor-sharp rendering in Windows 11
+    Explorer, Taskbar, and System Tray (^ overflow menu).
+    """
+    from PySide6.QtGui import QIcon, QPixmap
+    from PySide6.QtCore import Qt
+
+    icon = QIcon()
+    ico_path = get_asset_path("GlideX.ico")
+    if os.path.exists(ico_path):
+        icon = QIcon(ico_path)
+
+    png_path = get_asset_path("GlideX.png")
+    if os.path.exists(png_path):
+        base_pixmap = QPixmap(png_path)
+        if not base_pixmap.isNull():
+            for s in (16, 20, 24, 32, 40, 48, 64, 128, 256):
+                scaled = base_pixmap.scaled(
+                    s, s,
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation
+                )
+                icon.addPixmap(scaled)
+
+    return icon
+
+
 @dataclass
 class AppConfig:
     # General
